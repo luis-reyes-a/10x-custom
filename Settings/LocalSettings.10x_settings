@@ -1,0 +1,25 @@
+
+# Path to the settings folder. Changing this will move your settings to the new folder if they don't exist there already.
+SettingsPath:                      C:/Users/Shine/AppData/Roaming/10x/Settings
+
+# Server address for the perforce server, eg: 127.0.0.1:1666
+PerforceServerAddress:              
+
+# Perforce user name
+PerforceUserName:                   
+
+# Perforce client name
+PerforceClientName:                 
+
+# timeout in seconds for Perforce commands
+PerforceTimeout:                   20
+
+
+# Diff executable. Eg p4merge <file1> <file2>
+DiffExe:                           p4merge <file1> <file2>
+
+# License Key Name for registration
+LicenseKeyName:                    
+
+# License Key Value for registration
+LicenseKeyValue:                   

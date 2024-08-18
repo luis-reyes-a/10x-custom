@@ -13,13 +13,13 @@ FontGamma:                                2.2
 
 # The main UI Scale. Set to 1 for 100% scaling, 1.5 for 150% etc. Set to 'auto' to use the OS scale.
 # Valid values: float, auto
-UIScale:                                  2.5
+UIScale:                                  1.5
 
 # The font for all text editor windows. Can be the font name, the name of the ttf file in a system fonts folder or the full path to a ttf file.
 EditorFont:                               Consolas
 
 # The font size for all text editor windows
-EditorFontSize:                           12
+EditorFontSize:                           14
 
 # Extra spacing between lines
 VerticalLineGap:                          1
@@ -29,7 +29,7 @@ VerticalLineGap:                          1
 HideMainMenu:                             true
 
 # The current colour scheme for all UI elements. Can be 'default'
-ColourScheme:                             VS-Classic custom
+ColorScheme:                              Moss
 
 # How often to backup unsaved files (ms)
 FileBackupFrequency:                      5000
@@ -169,10 +169,10 @@ BuildBeforeRun:                           true
 VerticalRulers:                           
 
 # true to make the Enter key submit autocomplete
-SubmitAutocompleteOnEnter:                true
+SubmitAutocompleteOnEnter:                false
 
 # cursor blink rate. Time in ms between blinks. Can be set to auto to use the OS blick rate. Set to 0 to disable.
-CursorBlinkRate:                          0
+CursorBlinkRate:                          auto
 
 # Show the main app menu when the mouse hovers over
 ShowMainMenuOnMouseHover:                 true
@@ -200,7 +200,7 @@ Vim:                                      false
 Search.PathMode:                          FolderAndFile
 
 # Search will search files with these extensions
-Search.Extensions:                        .asm, .bat, .c, .cc, .cpp, .cs, .css, .csv, .cxx, .def, .disco, .dtd, .fx, .h, .hh, .hpp, .hlsl, .htm, .html, .hxx, .idl, .inc, .inl, .java, .js, .l, .ll, .lnx, .log, .mk, .pl, .pmk, .ps, .py, .s, .sh, .src, .srf, .tlh, .tli, .txt, .vb, .vsh, .wsdl, .xaml, .xml, .xsd, .xsl, .xslt, .y, .psh, .fsh, .sh, .shader, .vsct, .resx, .wxs, .php, .vsixmanifest, .uc, .sql, .webconfig, .aspx, .lua, .cshtml, .md, .usf, .ush, .pssl
+Search.Extensions:                        .asm, .bat, .c, .cc, .cpp, .cs, .css, .csv, .cxx, .def, .disco, .dtd, .fx, .h, .hh, .hpp, .hlsl, .htm, .html, .hxx, .idl, .inc, .inl, .java, .js, .l, .ll, .lnx, .log, .mk, .pl, .pmk, .ps, .py, .s, .sh, .src, .srf, .tlh, .tli, .txt, .vb, .vsh, .wsdl, .xaml, .xml, .xsd, .xsl, .xslt, .y, .psh, .fsh, .sh, .shader, .vsct, .resx, .wxs, .php, .vsixmanifest, .uc, .sql, .webconfig, .aspx, .lua, .cshtml, .md, .usf, .ush, .pssl, .ini, .json
 
 # Comma separated list of wildcards for files to exclude
 Search.ExcludeList:                       */sqlite/*
@@ -263,7 +263,7 @@ AutoFormatBlockCommentsNewLines:          true
 OpenBraceOnNewLine:                       false
 
 # true to enable autocomplete to automatically show as you type
-Autocomplete:                             false
+Autocomplete:                             true
 
 # if true, '#if SOMETHING' will resolve to '#if 1' if SOMETHING isn't defined. Reopen the workspace and reparse for this to take effect.
 TreatUndefinedDefinesAsTrue:              false
@@ -280,7 +280,9 @@ AdditionalIncludePaths:
 
 # Path of the Visual Studio VsDevCmd.bat or vcvars64.bat batch file to use for setting the Visual Studio build environment. Restart 10X after changing this value. Set to 'auto' to let 10x try and find the path
 # Build.VisualStudioEnvBat:                 C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/Tools/VsDevCmd.bat
-VisualStudioEnvBat:                       C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat
+VisualStudioEnvBat:                       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat
+
+
 
 # The internet search engine command. Search word will be appended to this command.
 InternetSearchCommand:                    https://www.google.com/search?q=
@@ -300,7 +302,7 @@ RememberOpenFiles:                        false
 
 # How to display the cursor (caret) in the text editor. Values: (Line, Block, Underscore)
 # Valid values: Line, Block, Underscore, HalfBlock
-CursorMode:                               Line
+CursorMode:                               Block
 
 # Whether lines should be indented with tabs or spaces
 PythonIndentMode:                         Spaces
@@ -309,7 +311,7 @@ PythonIndentMode:                         Spaces
 ToggleMainMenuOnAlt:                      true
 
 # Controls the column in which a file is opened for Goto symbol definition and Goto Build Error
-GotoDefColumn:                            default
+GotoDefColumn:                            other
 
 # Always centre floating panels horizontally
 CentreFloatingPanelsHorz:                 true
@@ -323,7 +325,7 @@ ColourUndefinedKeywords:                  true
 # Show Line Endings
 ShowLineEndings:                          false
 
-# true to enable autocomplete in comments
+# true to enable a in comments
 AutocompleteInComments:                   false
 
 # The maximum number of tabs to keep open
@@ -347,6 +349,10 @@ BracketAlignConditionals:                 false
 # Align lines in assignment statements to equals char
 AlignToEquals:                            false
 
+# Enable dragging of text with the mouse
+TextDrag:                                 true
+
+
 # Highlight the current find text in the scroll bar
 HighlightFindTextInScrollBar:             true
 
@@ -360,7 +366,7 @@ ScrollBarHighlightSize:                   1.0
 GotoDefResolvesTypedefs:                  false
 
 # Files larger than this size (in bytes) will not be parsed.
-ParserMaxFileSize:                        10485760
+ParserMaxFileSize:                        52428800
 
 
 # Stop the debugger when a full build starts
@@ -383,4 +389,15 @@ MouseWheelZoom:                           true
 
 # True to open files in the column specified by the Column0Presets, Column1Presets, Column2Presets settings
 UseColumnPresets:                         true
+
+# True to put the cursor at the start of the selected find text instead of the end
+ReverseFindSelection:                     false
+
+# 
+# Perforce
+# 
+
+# Automatically open a file for edit when read only files are modified or saved
+PerforceAutoOpenForEdit:                  true
+
 

@@ -1,555 +1,532 @@
-#------------------------------------------------------------------------
-import os
 import N10X
 
-Modal_Mode = False
-Mark_Set = False
-Set_Modal_Mode_After_Key_Intercept = False
+g_mark_pos = (0, 0)
+g_pos_when_started_incremental_search = (0, 0)
+g_escape_pressed_when_doing_incremental_search = False
+g_enter_pressed_when_doing_incremental_search = False
 
-def search_forward():
-	if N10X.Editor.IsFindPanelOpen():
-		#print("case 1")
-		N10X.Editor.ExecuteCommand("FindInFileNext")
-	else:
-		#print("case 2")
-		N10X.Editor.ExecuteCommand("FindInFile")
-		
-def insert_underscore():
-	N10X.Editor.InsertText("_")
-	
-""" NOTE need some way to close tabs
-def close_tab_or_panel():
-	N10X.Editor.CloseFile();
-	
-"""
-	
-def toggle_cpp_header_source_file():
-	filename = N10X.Editor.GetCurrentFilename()
-	parts = os.path.splitext(filename)
-	new_name = None;
-	if parts[1] == '.h' or parts[1] == '.hpp':
-		new_name = parts[0] + ".cpp"
-	elif parts[1] == '.cpp' or parts[1] == '.c':
-		new_name = parts[0] + ".h"
-		
-	if new_name is not None:
-		N10X.Editor.OpenFile(new_name)
-
-def select_line():
-	cursor_pos = N10X.Editor.GetCursorPos()
-	text = N10X.Editor.GetLine(cursor_pos[1])
-	text_len = len(text)
-	
-	start_offset = 0
-	for i in range(0, text_len):
-		if (text[i] != ' ') and (text[i] != '\t'):
-			start_offset = i
-			break
-	
-	end_offset = 0
-	for i in reversed(range(0, text_len)): 
-		if (text[i] != ' ') and (text[i] != '\t') and (text[i] != '\n') and (text[i] != '\r'):
-			end_offset = text_len - (i+1);
-			break
-			
-	N10X.Editor.SetSelection((start_offset, cursor_pos[1]), (text_len-end_offset, cursor_pos[1]))
-		
-def toggle_autocomplete():
-	if N10X.Editor.IsShowingAutocomplete():
-		N10X.Editor.ExecuteCommand("CancelAutocomplete")
-	else:
-		N10X.Editor.ExecuteCommand("Autocomplete")
-		
-def search_backwards():
-	if N10X.Editor.IsFindPanelOpen():
-		N10X.Editor.ExecuteCommand("FindInFilePrev")
-	else:
-		N10X.Editor.ExecuteCommand("FindInFile")
-
-
-def MoveToStartOfLine():
-	cursor_pos = N10X.Editor.GetCursorPos()
-	N10X.Editor.SetCursorPos((0, cursor_pos[1]))
-
-def MoveToEndOfLine():
-	cursor_pos = N10X.Editor.GetCursorPos()
-	line = N10X.Editor.GetLine(cursor_pos[1])
-	N10X.Editor.SetCursorPos((len(line), cursor_pos[1]))
-	
-def insert_underscore():
-	N10X.Editor.InsertText("_")
-
-#almost works but first line we're on gets shifted down...
-def open_scope():
-	N10X.Editor.SendKey("Enter")
-	#N10X.Editor.InsertText("}")
-	#N10X.Editor.ExecuteCommand("InsertLine")
-	#N10X.Editor.SendKey("Tab")
-	#N10X.Editor.ExecuteCommand("InsertLine")
-	#N10X.Editor.InsertText("{")
-	#N10X.Editor.ExecuteCommand("InsertLine")
-	
-	
-	#N10X.Editor.SendKeyDown("Enter")
-	#N10X.Editor.SendKeyUp("Enter")
-	#N10X.Editor.InsertText("{")
-	#N10X.Editor.SendKey("Enter")
-	#N10X.Editor.SendKey("Tab")
-	#N10X.Editor.SendKey("Enter")
-	#N10X.Editor.InsertText("}")
-	
-def print_buffer_filename():
-	name = N10X.Editor.GetCurrentFilename()
-	print(name);
-
-	
-def build_active_workspace():
-	N10X.Editor.ExecuteCommand("BuildActiveWorkspace")
-	
-	# BuildActiveWorkspace will show build panel in other view and not focus on it if it exists
-	# if it doesn't exist, it makes it on the same panel, so we move it and move focus back
-	
-	show_build_output_other_panel()
-			
-def show_build_output_other_panel():
-	N10X.Editor.ExecuteCommand("SetRowCount1")
-	N10X.Editor.ExecuteCommand("SetColumnCount2")
-	N10X.Editor.ExecuteCommand("ShowBuildOutput")
-	
-	filename = N10X.Editor.GetCurrentFilename() 
-	if not filename: #note no way to check if current buffer is the buildpanel, so we just do it this way (will fail for other non-file panels)
-		(grid_x, _) = N10X.Editor.GetCurrentPanelGridPos()
-		if (grid_x == 0):
-			N10X.Editor.ExecuteCommand("MovePanelRight")
-			N10X.Editor.ExecuteCommand("MovePanelFocusLeft")
-		else:
-			N10X.Editor.ExecuteCommand("MovePanelLeft")
-			N10X.Editor.ExecuteCommand("MovePanelFocusRight")
-		
-
-# NOTE taken from Example.py	
-# Switches to single column and enables line numbers
-def QuickPane1():
-    N10X.Editor.ExecuteCommand("SetRowCount1")
-    current=N10X.Editor.GetCurrentFilename()    # Temp workaround for current tab losing focus when SetColumnCount1 is called
-    N10X.Editor.ExecuteCommand("SetColumnCount1")
-    N10X.Editor.FocusFile(current)              # Temp workaround for current tab losing focus when SetColumnCount1 is called
-    N10X.Editor.ExecuteCommand("CloseAllOtherTabs")
-	
-def QuickPane2():
-	N10X.Editor.ExecuteCommand("SetRowCount1")
-	# Only duplicate if right panel doesn't exist already
-	(gridx, _) = N10X.Editor.GetCurrentPanelGridPos()
-	if (gridx > 0): 
-		return
-
-	N10X.Editor.ExecuteCommand("DuplicatePanel")
-	N10X.Editor.ExecuteCommand("MovePanelFocusRight")
-
-	N10X.Editor.ExecuteCommand("SetColumnCount2")
-
-	# If tthe panel was duplicated to the right column, we are done.
-	(gridx, _) = N10X.Editor.GetCurrentPanelGridPos()
-	if (gridx > 0): 
-		return
-
-	N10X.Editor.ExecuteCommand("MovePanelRight")
-	return True
-                                
-# NOTE taken from Example.py									
-# Switches to dual column and duplicates the current tab into the other panel.
-def vsplit():
-    # Only duplicate if right panel doesn't exist already
-	column_count = N10X.Editor.GetColumnCount()
-	if column_count > 1:
-		return
-	
-	N10X.Editor.ExecuteCommand("SetRowCount1")
-
-	N10X.Editor.ExecuteCommand("DuplicatePanel")
-	N10X.Editor.ExecuteCommand("MovePanelFocusRight")
-
-	N10X.Editor.ExecuteCommand("SetColumnCount2")
-
-    # If tthe panel was duplicated to the right column, we are done.
-	(gridx, _) = N10X.Editor.GetCurrentPanelGridPos()
-	if (gridx > 0): return
-
-	N10X.Editor.ExecuteCommand("MovePanelRight")
-	return True
-	
-#really wish GotoSymbolDefinition() could just take in an argument asking to open in a differnt panel or make a new panel (if none)
-
-def goto_symbol_same_panel():
-	init_col_count = N10X.Editor.GetColumnCount()
-	if init_col_count == 1: #if just one column, this will always work so we just abort here
-		N10X.Editor.ExecuteCommand("GotoSymbolDefinition")
-		return
-		
-	
-	
-	(init_grid_x, _) = N10X.Editor.GetCurrentPanelGridPos()
-	#init_cursor_pos  = N10X.Editor.GetCursorPos()
-	#init_filename    = N10X.Editor.GetCurrentFilename()
-	
-	
-	N10X.Editor.ExecuteCommand("GotoSymbolDefinition")
-	(new_grid_x, _) = N10X.Editor.GetCurrentPanelGridPos()
-	
-	grid_x = init_grid_x;
-	while (grid_x < new_grid_x):
-		N10X.Editor.ExecuteCommand("MovePanelRight")
-		grid_x += 1;
-		
-	while (grid_x > new_grid_x):
-		N10X.Editor.ExecuteCommand("MovePanelLeft")
-		grid_x -= 1;
-		
-
-def goto_symbol_other_panel():
-	N10X.Editor.ExecuteCommand("SetColumnCount2")
-	
-	init_cursor_pos = N10X.Editor.GetCursorPos()
-	init_filename = N10X.Editor.GetCurrentFilename()
-		
-	(init_grid_x, _) = N10X.Editor.GetCurrentPanelGridPos()
-	
-	N10X.Editor.ExecuteCommand("GotoSymbolDefinition")
-	new_filename = N10X.Editor.GetCurrentFilename();
-	symbol_in_same_file = (new_filename == init_filename);
-	if symbol_in_same_file:
-		symbol_pos = N10X.Editor.GetCursorPos()
-		N10X.Editor.ExecuteCommand("DuplicatePanel")
-		N10X.Editor.SetCursorPos(symbol_pos)
-		
-	(new_grid_x, _)  = N10X.Editor.GetCurrentPanelGridPos()
-	
-	
-	if new_grid_x == init_grid_x: # we're still on the same panel, we have to move it over one
-		if init_grid_x == 0:
-			N10X.Editor.ExecuteCommand("MovePanelRight")
-			if symbol_in_same_file:
-				N10X.Editor.ExecuteCommand("MovePanelFocusLeft")
-				N10X.Editor.SetCursorPos(init_cursor_pos)
-				N10X.Editor.ExecuteCommand("MovePanelFocusRight")
-		else:
-			N10X.Editor.ExecuteCommand("MovePanelLeft")
-			if symbol_in_same_file:
-				N10X.Editor.ExecuteCommand("MovePanelFocusRight")
-				N10X.Editor.SetCursorPos(init_cursor_pos)
-				N10X.Editor.ExecuteCommand("MovePanelFocusLeft")
-	elif symbol_in_same_file: #here we duplicated a panel to the other side so we have to return initial panel to it's original cursor pos
-		if new_grid_x == 0:
-			N10X.Editor.ExecuteCommand("MovePanelFocusRight")
-			N10X.Editor.SetCursorPos(init_cursor_pos)
-			N10X.Editor.ExecuteCommand("MovePanelFocusLeft")
-		else:
-			N10X.Editor.ExecuteCommand("MovePanelFocusLeft")
-			N10X.Editor.SetCursorPos(init_cursor_pos)
-			N10X.Editor.ExecuteCommand("MovePanelFocusRight")
-
-		
-	
-	
-	
-	
-def cycle_panel_focus():
-	(prev_grid_x, _) = N10X.Editor.GetCurrentPanelGridPos()
-	N10X.Editor.ExecuteCommand("MovePanelFocusRight")
-	(new_grid_x, _) = N10X.Editor.GetCurrentPanelGridPos()
-	
-	if new_grid_x == prev_grid_x:
-		for i in range(new_grid_x):
-			N10X.Editor.ExecuteCommand("MovePanelFocusLeft")
-			
-		
-	
-
-
-def swap_cursor_and_mark():
-	(prev_cursor_x, prev_cursor_y) = N10X.Editor.GetCursorPos()
-	(sel_start_x, sel_start_y)     = N10X.Editor.GetSelectionStart()
-	(sel_end_x, sel_end_y)         = N10X.Editor.GetSelectionEnd()
-	#print(f"Cursor {prev_cursor_x}, {prev_cursor_y} | {sel_start_x}, {sel_start_y} -> {sel_end_x}, {sel_end_y}")
-	
-	if   prev_cursor_x == sel_start_x and prev_cursor_y == sel_start_y: # move cursor to end of selection
-		#print("case 1")
-		N10X.Editor.ClearSelection()
-		N10X.Editor.SetCursorPos((sel_start_x, sel_start_y))
-		N10X.Editor.SetCursorPosSelect((sel_end_x, sel_end_y))
-	elif prev_cursor_x == sel_end_x and prev_cursor_y == sel_end_y: # move cursor to start of selection
-		#print("case 2")
-		N10X.Editor.ClearSelection()
-		N10X.Editor.SetCursorPos((sel_end_x, sel_end_y))
-		N10X.Editor.SetCursorPosSelect((sel_start_x, sel_start_y))
-	#else:
-		#print("case 3")
-		
-
-
-#------------------------------------------------------------------------
-# Called when a char is to be inserted into the text editor.
-# Return true to surpress the char key.
-def luis_intercept_char(c):
-	global Modal_Mode
-	global Mark_Set
-	global Set_Modal_Mode_After_Key_Intercept
-	#print(f"Char to intercept is {c}")
-	if not Modal_Mode:
-		return False;
-	
-	#else we're in modal mode so just do this and return true
-	#if c == " ":
-		#Mark_Set = not Mark_Set
-	if c == "e" or c == "E":
-		#N10X.Editor.ExecuteCommand("MoveCursorUp")
-		Modal_Mode = False
-		Set_Modal_Mode_After_Key_Intercept = True
-		N10X.Editor.SendKey("Up", shift=Mark_Set)
-			
-	elif c == "d" or c == "D":
-		#N10X.Editor.ExecuteCommand("MoveCursorDown")
-		Modal_Mode = False
-		Set_Modal_Mode_After_Key_Intercept = True
-		N10X.Editor.SendKey("Down", shift=Mark_Set)
-		
-	elif c == "s" or c == "S":
-		Modal_Mode = False
-		Set_Modal_Mode_After_Key_Intercept = True
-		N10X.Editor.SendKey("Left", shift=Mark_Set, control=True)
-			
-	elif c == "f" or c == "F":
-		Modal_Mode = False
-		Set_Modal_Mode_After_Key_Intercept = True
-		N10X.Editor.SendKey("Right", shift=Mark_Set, control=True)
-
-	elif c == "w" or c == "W":
-		#N10X.Editor.ExecuteCommand("MoveCursorLeft")
-		Modal_Mode = False
-		Set_Modal_Mode_After_Key_Intercept = True
-		N10X.Editor.SendKey("Left", shift=Mark_Set)
-		
-		
-	elif c == "r" or c == "R":
-		#N10X.Editor.ExecuteCommand("MoveCursorRight")
-		Modal_Mode = False
-		Set_Modal_Mode_After_Key_Intercept = True
-		N10X.Editor.SendKey("Right", shift=Mark_Set)
-		
-	elif c == "a" or c == "A":
-		Modal_Mode = False
-		Set_Modal_Mode_After_Key_Intercept = True
-		N10X.Editor.SendKey("Home", shift=Mark_Set)
-		
-	elif c == "g" or c == "G":
-		Modal_Mode = False
-		Set_Modal_Mode_After_Key_Intercept = True
-		N10X.Editor.SendKey("End", shift=Mark_Set)
-	
-	elif c == "c" or c == "C":
-		N10X.Editor.ExecuteCommand("Copy")
-		Mark_Set = False
-		N10X.Editor.ClearSelection()
-		
-	elif c == "x" or c == "X":
-		N10X.Editor.ExecuteCommand("Cut")
-		Mark_Set = False
-		N10X.Editor.ClearSelection()
-		
-	elif c == "k" or c == "K":
-		select_line()
-		
-	elif c == "v" or c == "V":
-		N10X.Editor.ExecuteCommand("Paste")	
-		
-	elif c == "u" or c == "U": #redo is ctrl+U
-		N10X.Editor.ExecuteCommand("Undo")	
-		
-	elif c == "\'":
-		Mark_Set = True
-		#this way doesn't work (I expect it's because cursor doesn't get updated immediately?)
-		#N10X.Editor.ExecuteCommand("MoveCursorLeft")
-		
-		original_sel_start = N10X.Editor.GetSelectionStart();
-		original_sel_end   = N10X.Editor.GetSelectionEnd();
-		original_sel_ydelta = original_sel_end[1] - original_sel_start[1];
-		
-		
-		#swap_cursor_and_mark() //doesn't work if move around and attempt to fix again
-		(cx, cy) = N10X.Editor.GetCursorPos();
-		N10X.Editor.SetCursorPos((cx-1, cy));
-		
-		N10X.Editor.ExecuteCommand("SelectCurrentScope")
-		swap_cursor_and_mark()
-		
-		# note prob the best way to do this is to call SelectCurrentScope twice, once at current pos and one one to the left
-		# and just select the bigger selection region, however we don't have a way to compare selections ranges for their size...
-		# my method will work but not if the braces rest on the same line like {{{ }}}
-		new_sel_start = N10X.Editor.GetSelectionStart();
-		new_sel_end   = N10X.Editor.GetSelectionEnd();
-		new_sel_ydelta = new_sel_end[1] - new_sel_start[1];
-		if (new_sel_ydelta < original_sel_ydelta):
-			N10X.Editor.SetCursorPos(original_sel_start);
-			N10X.Editor.SetCursorPosSelect(original_sel_end);
-	
-	elif c == "/":
-		N10X.Editor.ExecuteCommand("ToggleComment")
-		
-        
-	return True
-
-#------------------------------------------------------------------------
-# Called when a key is pressed.
-# Return true to surpress the key
 def luis_intercept_key(key, shift, control, alt):
-	global Modal_Mode
-	global Mark_Set
-	global Set_Modal_Mode_After_Key_Intercept
-	
-	
-	if key == "D" and control == True:
-		Modal_Mode = not Modal_Mode
-		if Modal_Mode:
-			N10X.Editor.SetCursorColourOverride((255, 0, 0))
-			N10X.Editor.ResetCursorBlink()
-		else:
-			N10X.Editor.ClearCursorColourOverride()
-			N10X.Editor.ResetCursorBlink()
-			#clear selections if any
-			Mark_Set = False
-			N10X.Editor.ClearSelection()
-		return True
-	elif key == "F" and control:
-		search_forward()
-		return True
-	elif key == "R" and control:
-		search_backwards()
-		return True
-	elif key == "Q" and control:
-		N10X.Editor.ExecuteCommand("FindReplaceInFile")
-		return True
-	elif key == "T" and control:
-		toggle_cpp_header_source_file();
-		return True
-	elif key == "C" and control:
-		N10X.Editor.ExecuteCommand("Copy")
-		Mark_Set = False
-		N10X.Editor.ClearSelection()
-		return True
-	elif key == "/" and control:
-		N10X.Editor.ExecuteCommand("ToggleComment")
-		return True
-	elif key == "`" and control:
-		N10X.Editor.ExecuteCommand("ToggleWorkspaceExplorer")
-		return True
-	elif key == "," and control:
-		N10X.Editor.ExecuteCommand("insert_underscore")
-		return True
-	elif key == "." and control:
-		N10X.Editor.InsertText("->")
-		return True
-	elif key == "I" and control:
-		#N10X.Editor.InsertText("{")
-		N10X.Editor.SendCharKey("{")
-		N10X.Editor.SendKey("Enter")
-		N10X.Editor.SendKey("Enter")
-		N10X.Editor.SendCharKey("}")
-		N10X.Editor.SendKey("Up")
-		N10X.Editor.SendKey("Tab")
-		
-		return True
-	elif key == ";" and control:
-		cycle_panel_focus()
-		return True
-	elif key == "Enter":
+	global g_escape_pressed_when_doing_incremental_search
+	global g_enter_pressed_when_doing_incremental_search
+	# global g_pos_when_started_incremental_search
+	if key == "Escape":
 		if N10X.Editor.IsFindPanelOpen():
-			N10X.Editor.SendKey("Escape")
-			return True
-	elif key == "J" and control:
-		if N10X.Editor.IsShowingAutocomplete():
-			N10X.Editor.SendKey("Enter")
-			return True
-	elif key == "K" and control:
-		if N10X.Editor.IsShowingAutocomplete():
-			N10X.Editor.SendKey("Down")
-			return True
-		else:
-			select_line()
-	elif key == "L" and control:
-		if N10X.Editor.IsShowingAutocomplete():
-			N10X.Editor.SendKey("Up")
-			return True
-		else:
-			(cx, cy) = N10X.Editor.GetCursorPos();
-			N10X.Editor.CenterViewAtLinePos(cy+4);
+			g_escape_pressed_when_doing_incremental_search = True
 			
-	elif key == "Down" and alt:
-		if control:
-			goto_symbol_same_panel()
-		else:
-			goto_symbol_other_panel()
-			
-	elif key == "Left":
-		if alt:
-			if control:
-				N10X.Editor.ExecuteCommand("PrevLocation")
-				return True
-			else:
-				N10X.Editor.ExecuteCommand("PrevLocationCurrentFile")
-				return True
-				
-	elif key == "Right":
-		if alt:
-			if control:
-				N10X.Editor.ExecuteCommand("NextLocation")
-				return True
-			else:
-				N10X.Editor.ExecuteCommand("NextLocationCurrentFile")
-				return True
-			
-			
-	
-	
-		
-		
-		
-		
-		
-	
-	if Modal_Mode:
-		if key == "Space":
-			if control == True:
-				swap_cursor_and_mark()
-			else:
-				Mark_Set = not Mark_Set
-				if not Mark_Set:
-					N10X.Editor.ClearSelection()
-		elif key == "U" and control:
-			N10X.Editor.ExecuteCommand("Redo")
-		elif key == "Tab":
-			if control:
-				N10X.Editor.ExecuteCommand("UnindentLine")
-			else:
-				N10X.Editor.ExecuteCommand("IndentLine")
-		elif key == "Backspace" or key == "Enter": #bypass these guys
-			Mark_Set = False;
-			return False
-		
-		return True
-		
-		
-	# NOTE hacky thing we have to do to make selecting upwards/downards work since there isn't a command for that...
-	if Set_Modal_Mode_After_Key_Intercept:
-		Set_Modal_Mode_After_Key_Intercept = False
-		Modal_Mode = True
+	if key == "Enter":
+		if N10X.Editor.IsFindPanelOpen():
+			N10X.Editor.SendKey("Escape") # will this go back to message loop?
+			g_enter_pressed_when_doing_incremental_search = True
 		
 	return False
 
-#------------------------------------------------------------------------
+	
+"""
+def luis_on_key(key, shift, control, alt):
+	global g_escape_pressed_when_doing_incremental_search
+	global g_pos_when_started_incremental_search
+	if key == "Escape":
+		print (f"ESC pressed and bool is {g_escape_pressed_when_doing_incremental_search}")
+		if g_escape_pressed_when_doing_incremental_search:
+			g_escape_pressed_when_doing_incremental_search = False
+			N10X.Editor.SetCursorPos(g_pos_when_started_incremental_search)
+			print (f"Tried to set cursor pos to {g_pos_when_started_incremental_search}")
+		if N10X.Editor.IsFindPanelOpen():
+			print ("Escape still searching?")
+		else:
+			print ("Escape NO SEARCHING")
+"""		
+
+
+def luis_update():
+	global g_escape_pressed_when_doing_incremental_search
+	global g_enter_pressed_when_doing_incremental_search
+	global g_pos_when_started_incremental_search
+	if g_escape_pressed_when_doing_incremental_search:
+			g_escape_pressed_when_doing_incremental_search = False
+			if g_enter_pressed_when_doing_incremental_search:
+				g_enter_pressed_when_doing_incremental_search = False
+				# do nothing
+			else:
+				N10X.Editor.SetCursorPos(g_pos_when_started_incremental_search)
+	
+
 def luis_init():
-	print("Hello intercept")
-	N10X.Editor.AddOnInterceptCharKeyFunction(luis_intercept_char)
 	N10X.Editor.AddOnInterceptKeyFunction(luis_intercept_key)
+	#N10X.Editor.AddOnKeyFunction(luis_on_key)
+	N10X.Editor.AddUpdateFunction(luis_update)
 
 N10X.Editor.CallOnMainThread(luis_init)
-#N10X.Editor.AddUpdateFunction(Initialize)
+
+def emacs_set_mark():
+	global g_mark_pos
+	g_mark_pos = N10X.Editor.GetCursorPos()
+
+def search_forward():
+	global g_pos_when_started_incremental_search
+	if N10X.Editor.IsFindPanelOpen():
+		N10X.Editor.ExecuteCommand("FindInFileNext")
+	else:
+		g_pos_when_started_incremental_search = N10X.Editor.GetCursorPos()
+		# N10X.Editor.ExecuteCommand("ClearAllBookmarks")
+		# N10X.Editor.ExecuteCommand("ToggleBookmark")
+		N10X.Editor.ExecuteCommand("FindInFile")
+
+def search_backwards():
+	global g_pos_when_started_incremental_search
+	if N10X.Editor.IsFindPanelOpen():
+		N10X.Editor.ExecuteCommand("FindInFilePrev")
+	else:
+		g_pos_when_started_incremental_search = N10X.Editor.GetCursorPos()
+		# N10X.Editor.ExecuteCommand("ClearAllBookmarks")
+		# N10X.Editor.ExecuteCommand("ToggleBookmark")
+		N10X.Editor.ExecuteCommand("FindInFile")
+		
+def emacs_kill_line():
+	N10X.Editor.ExecuteCommand("SelectToLineEnd")
+	N10X.Editor.ExecuteCommand("Cut")
+	
+def emacs_copy():
+	global g_mark_pos
+	N10X.Editor.ExecuteCommand("Copy")
+	(cursor_pos, other_pos) = get_selection_cursor_pos_and_other_end()
+	g_mark_pos = other_pos;
+	N10X.Editor.SendKey("Escape")
+	
+
+# dones't work to well, I think it's some bug with cursor pos being an (x, y) instead of a byte offset...
+def emacs_paste():
+	emacs_set_mark()
+	N10X.Editor.ExecuteCommand("Paste")
+	
+def is_pos_before(p1, p2):
+	if p1[1] < p2[1]: 
+		return True
+	elif p1[1] > p2[1]:
+		return False
+	elif p1[0] < p2[0]:
+		return True;
+	elif p1[0] > p2[0]:
+		return False
+	return False
+	
+# taken from staniw from 10x discord
+def ReverseSelection():
+	(cur_x, cur_y) = N10X.Editor.GetCursorPos()
+	(start_x, start_y) = N10X.Editor.GetSelectionStart()
+	(end_x, end_y) = N10X.Editor.GetSelectionEnd()
+	if (cur_x, cur_y) == (start_x, start_y):
+		N10X.Editor.SetCursorPos((end_x, end_y))
+		N10X.Editor.SetSelection((start_x, start_y), (end_x, end_y))
+	else:
+		N10X.Editor.SetCursorPos((start_x, start_y))
+		N10X.Editor.SetSelection((end_x, end_y), (start_x, start_y))
+		
+def is_there_selection(cursor_index = 0):
+	(p1x,p1y), (p2x,p2y) = N10X.Editor.GetCursorSelection();
+	return (p1x, p1y) != (p2x, p2y)
+	
+def get_selection_cursor_pos_and_other_end():
+	(cur_x, cur_y)     = N10X.Editor.GetCursorPos()
+	(start_x, start_y) = N10X.Editor.GetSelectionStart()
+	(end_x, end_y)     = N10X.Editor.GetSelectionEnd()
+	if (cur_x, cur_y) == (start_x, start_y):
+		return ((cur_x, cur_y), (end_x, end_y))
+	else:
+		return ((cur_x, cur_y), (start_x, start_y))
+	
+def emacs_swap_cursor_mark():
+	global g_mark_pos
+	if is_there_selection():
+		ReverseSelection()
+		(cursor_pos, other_pos) = get_selection_cursor_pos_and_other_end()
+		g_mark_pos = other_pos;
+	elif g_mark_pos != N10X.Editor.GetCursorPos():
+		init_cursor_pos = N10X.Editor.GetCursorPos()
+		N10X.Editor.SetSelection(g_mark_pos, init_cursor_pos)
+		(cursor_pos, other_pos) = get_selection_cursor_pos_and_other_end();
+		if (cursor_pos == init_cursor_pos):
+			g_mark_pos = init_cursor_pos
+			ReverseSelection();
+		else:
+			g_mark_pos = other_pos
+	#else : in emacs this sets the cursor and begins selection mode, we can't quite do that yet...
+	
+
+	
+def select_surrounding_scope():
+	if is_there_selection():
+		ReverseSelection()	
+	N10X.Editor.ExecuteCommand("SelectCurrentScope")
+	ReverseSelection();
+	
+
+
+	
+	
+	
+# stolen from 10x/python scripts on github
+def GetLine(y=None):
+	if y is None:
+		x, y = N10X.Editor.GetCursorPos()
+	return N10X.Editor.GetLine(y)
+
+def GetLineLength(y=None):
+	line = GetLine(y)
+	line = line.rstrip("\r\n")
+	return len(line)
+
+def GetMaxY():
+	return max(0, N10X.Editor.GetLineCount() - 1)
+
+def AtEndOfFile(x, y):
+	return y > GetMaxY() or (y == GetMaxY() and x >= GetLineLength(GetMaxY()))
+	
+def IsWhitespaceChar(c):
+	return c == ' ' or c == '\t' or c == '\r' or c == '\n'
+
+def IsWhitespace(x, y):
+	line = GetLine(y)
+	return x >= len(line) or IsWhitespaceChar(line[x])
+	
+def GetNextNonWhitespaceCharPos(x, y, wrap=True):
+	while not AtEndOfFile(x, y) and IsWhitespace(x, y):
+		if x >= GetLineLength(y):
+			if wrap and y < GetMaxY():
+				x = 0
+				y += 1
+			else:
+				break
+		else:
+			x += 1
+	return x, y
+
+def MoveToNextNonWhitespaceChar(wrap=True):
+	x, y = N10X.Editor.GetCursorPos()
+	end_x, end_y = GetNextNonWhitespaceCharPos(x, y, wrap)
+	N10X.Editor.SetCursorPos((end_x, end_y))
+	print("move right")
+
+
+	
+def GetPrevNonWhitespaceCharPos(x, y):
+	while y and IsWhitespace(x, y):
+		if x == 0:
+			y -= 1
+			x = GetLineLength(y)
+			if x:
+				x -= 1
+		else:
+			x -= 1
+	return x, y
+	
+
+# close all panels except this one
+def emacs_cx_1():
+	(gridx, gridy) = N10X.Editor.GetCurrentPanelGridPos() # 0 based
+	print (f"{gridx} and {gridy}");
+	for i in range(gridx):
+		N10X.Editor.ExecuteCommand("MovePanelLeft")
+		
+	for i in range(gridy):
+		N10X.Editor.ExecuteCommand("MovePanelUp")
+		
+	N10X.Editor.ExecuteCommand("SetRowCount1")
+	N10X.Editor.ExecuteCommand("SetColumnCount1")
+	
+def emacs_cx_3():
+	(gridx, gridy) = N10X.Editor.GetCurrentPanelGridPos() 
+	if gridx > 0:
+		N10X.Editor.ExecuteCommand("DuplicatePanelLeft")
+		return
+		
+	N10X.Editor.ExecuteCommand("SetColumnCount2")
+	(gridx, gridy) = N10X.Editor.GetCurrentPanelGridPos() 
+	if gridx > 0: 
+		N10X.Editor.ExecuteCommand("DuplicatePanelLeft")
+		N10X.Editor.ExecuteCommand("MovePanelFocusRight")
+		# means we were on a panel that belonged to next column, callling SetColumnCount2 moved us already there
+		return
+		
+	# here we didn't move, so let's just move
+	N10X.Editor.ExecuteCommand("DuplicatePanelRight")
+	
+def focus_next_panel():
+	(gridx, gridy) = N10X.Editor.GetCurrentPanelGridPos() 
+	if gridx == 0:
+		N10X.Editor.ExecuteCommand("MovePanelFocusRight")
+	else:
+		N10X.Editor.ExecuteCommand("MovePanelFocusLeft")
+		
+# TODO this only works with two columns active
+def emacs_cx_0():
+	focus_next_panel();
+	emacs_cx_1();
+	
+def toggle_header_source_file_other_view():
+	emacs_cx_3();
+	N10X.Editor.ExecuteCommand("CppParser.ToggleSourceHeader")
+	
+	
+
+
+
+
+
+
+
+
+
+
+def MoveToPrevNonWhitespaceChar():
+	x, y = N10X.Editor.GetCursorPos()
+	end_x, end_y = GetPrevNonWhitespaceCharPos(x, y)
+	N10X.Editor.SetCursorPos((end_x, end_y))
+	print("move left")
+	
+class CharacterClass:
+	WHITESPACE  = 0
+	DEFAULT     = 1
+	WORD        = 2
+	
+def GetCharacterClass(c):
+	if IsWordChar(c):
+		return CharacterClass.WORD
+	if IsWhitespaceChar(c):
+		return CharacterClass.WHITESPACE
+	return CharacterClass.DEFAULT
+
+#------------------------------------------------------------------------
+def GetCharacterClassAtPos(x, y):
+	line = GetLine(y)
+	return GetCharacterClass(line[x]) if x < len(line)  else CharacterClass.WHITESPACE
+
+#------------------------------------------------------------------------
+
+
+def IsWordChar(c):
+	return \
+		(c >= 'a' and c <= 'z') or \
+		(c >= 'A' and c <= 'Z') or \
+		(c >= '0' and c <= '9') or \
+		c == '_'
+
+#------------------------------------------------------------------------
+def IsWord(x, y):
+	line = GetLine(y)
+	return IsWordChar(line[x])
+
+def GetPrevCharPos(x, y):
+	if x:
+		x -= 1
+	elif y:
+		y -= 1
+		x = max(0, GetLineLength(y) - 1)
+	else:
+		x = 0
+		y = 0
+	return x, y
+	
+def GetWordStart():
+	x, y = N10X.Editor.GetCursorPos()
+
+	x, y = GetPrevCharPos(x, y)
+	x, y = GetPrevNonWhitespaceCharPos(x, y)
+
+	line = N10X.Editor.GetLine(y)
+
+	if x < len(line):
+		character_class = GetCharacterClass(line[x])
+		while x > 0:
+			if GetCharacterClass(line[x - 1]) != character_class:
+				break
+			x -= 1
+
+	return x, y
+
+#------------------------------------------------------------------------
+def MoveToWordStart():
+	new_x, new_y = GetWordStart()
+	N10X.Editor.SetCursorPos((new_x, new_y))
+	
+def GetNextCharPos(x, y, wrap=True):
+	if x < GetLineLength(y):
+		x += 1
+	if wrap and x >= GetLineLength(y) and y < GetMaxY():
+		x = 0
+		y += 1
+	return x, y
+
+	
+	
+def GetWordEndPos(x, y, wrap=True):
+	x, y = N10X.Editor.GetCursorPos()
+
+	x, y = GetNextCharPos(x, y, wrap)
+	x, y = GetNextNonWhitespaceCharPos(x, y, wrap)
+
+	line = N10X.Editor.GetLine(y)
+
+	if x < len(line):
+		character_class = GetCharacterClass(line[x])
+		while x < len(line):
+			if GetCharacterClass(line[x]) != character_class:
+				break
+			x += 1
+	if x:
+		x -= 1
+	# NOTE(LUIS) added +1 to x since vim likes to make selections include where cursor is at...ughh
+	return x+1, y 
+
+def MoveToWordEnd():
+	x, y = N10X.Editor.GetCursorPos()
+	new_x, new_y = GetWordEndPos(x, y)
+	N10X.Editor.SetCursorPos((new_x, new_y))
+	
+
+
+
+
+def open_up_braces():
+	x, y = N10X.Editor.GetCursorPos()
+	line = GetLine(y)
+	moved_cursor_to_open_brace = False
+	while x >= 0:
+		if line[x] == '}':
+			N10X.Editor.SetCursorPos((x, y))
+			moved_cursor_to_open_brace = True
+			break
+		x -= 1;
+	
+	if moved_cursor_to_open_brace:
+		N10X.Editor.InsertText('\n')
+		N10X.Editor.InsertText('\n')
+		N10X.Editor.SendKey("Up")
+		N10X.Editor.InsertText('\t')	
+	
+
+# Neither of these write_open_braces work well (they don't indent last brace preoperly for whatever reason	
+"""
+def write_open_braces():
+	N10X.Editor.InsertText('{}')
+	N10X.Editor.SendKey("Left")
+	N10X.Editor.InsertText('\n')
+	N10X.Editor.InsertText('\n')
+	N10X.Editor.SendKey("Up")
+	N10X.Editor.InsertText('\t')	
+
+"""
+def write_open_braces():
+	N10X.Editor.InsertText("{} ")
+	open_up_braces()
+
+"""
+def is_at_word_separator(x, y):
+	line = GetLine(y)
+	if x >= len(line):
+		return True # assume it's a newline
+	c = line[x]
+	return  (c == ' ' or c == '\t' or c == '\r' or c == '\n' or
+	c == '[' or c == '(' or c == ')' or c == ']' or c == ',')
+	
+"""
+
+def is_at_word_separator(x, y):
+	line = GetLine(y)
+	if x >= len(line):
+		return True # assume it's a newline
+	c = line[x]
+	return not (c.isalnum() or c == '_')
+
+
+def move_next_word_boundary_pos():
+	x, y     = N10X.Editor.GetCursorPos()
+	hit_word = False
+	while not AtEndOfFile(x, y):
+		if is_at_word_separator(x, y):
+			if hit_word:
+				break;
+		else:
+			hit_word = True
+		
+		x += 1
+		if x > GetLineLength(y):
+			if y < GetMaxY():
+				x = 0
+				y += 1
+			else:
+				break
+	
+	return (x, y)
+	
+
+def get_pos_before_pos(x, y):
+	if x > 0:
+		return (x - 1, y)
+		
+	y -= 1
+	if (y >= 0):
+		x = GetLineLength(y)
+	else:
+		y = 0
+	return (x, y)
+		
+		
+		
+	
+def move_prev_word_boundary_pos():
+	#N10X.Editor.ExecuteCommand("MoveCursorLeft")
+	x, y = N10X.Editor.GetCursorPos()
+	x, y = get_pos_before_pos(x, y)  
+	# we want last pos when hit_word was set to true
+	(last_x, last_y) = (x, y)
+	hit_word = False
+	while y >= 0:
+		if is_at_word_separator(x, y):
+			if hit_word:
+				break;
+		else:
+			hit_word = True
+		
+		last_x = x
+		last_y = y
+		
+		if x == 0:
+			y -= 1;
+			x = GetLineLength(y)
+			#if x:
+				#x -= 1
+		else:
+			x -= 1;
+	
+	return (last_x, last_y)
+	
+def move_next_word_boundary():
+	N10X.Editor.SetCursorPos(move_next_word_boundary_pos())
+
+def move_prev_word_boundary():
+	N10X.Editor.SetCursorPos(move_prev_word_boundary_pos())
+
+
+
+def move_prev_word_boundary_select():
+	(init_cursor_pos, init_other_pos) = get_selection_cursor_pos_and_other_end()
+	new_cursor_pos = move_prev_word_boundary_pos()
+	N10X.Editor.SetSelection(init_other_pos, new_cursor_pos)	
+	
+def move_next_word_boundary_select():
+	(init_cursor_pos, init_other_pos) = get_selection_cursor_pos_and_other_end()
+	new_cursor_pos = move_next_word_boundary_pos()
+	N10X.Editor.SetSelection(init_other_pos, new_cursor_pos)
+
+def delete_to_prev_word_boundary():
+	(init_cursor_pos, init_other_pos) = get_selection_cursor_pos_and_other_end()
+	new_cursor_pos = move_prev_word_boundary_pos()
+	N10X.Editor.SetSelection(init_other_pos, new_cursor_pos)
+	N10X.Editor.ExecuteCommand("Delete")
+
+def delete_to_next_word_boundary():
+	(init_cursor_pos, init_other_pos) = get_selection_cursor_pos_and_other_end()
+	new_cursor_pos = move_next_word_boundary_pos()
+	N10X.Editor.SetSelection(init_other_pos, new_cursor_pos)
+	N10X.Editor.ExecuteCommand("Delete")

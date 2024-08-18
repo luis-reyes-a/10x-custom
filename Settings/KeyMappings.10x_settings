@@ -8,26 +8,44 @@ Control S:              SaveFile
 # Save all files
 Control S, Control S:   SaveAll
 
-# Show the Find File panel
-Shift Alt O:            FindFile
+
 
 # Create a new text file
-Control N:              NewTextFile
+# Control N:              NewTextFile
 
 # Cut to Clipboard
 Control X:              Cut
+Control W:              Cut
 
 # Copy to clipboard
-Control C:              Copy
+Control C:              emacs_copy
+Control E:              emacs_copy
 
 # Paste from clipboard
-Control V:              Paste
+Control V:              emacs_paste
 
 # Show the paste history dropdown
 Control Shift V:        PasteHistory
 
 # Find text in the current file
-Control F:              FindInFile
+Control F:              search_forward
+
+Control R:              search_backwards
+
+Control K:              emacs_kill_line
+# Delete the current line
+Alt K:        DeleteLine
+
+Shift Space:            emacs_swap_cursor_mark
+
+Control Space:          emacs_set_mark
+
+Control \: select_surrounding_scope
+
+
+
+
+
 
 # Find the previous occurance of the last searched for text in the current file
 Shift F3:               FindInFilePrev
@@ -40,6 +58,8 @@ Control F3:             FindInFileNextCurrentWord
 
 # Find and replace text in the current file
 Control H:              FindReplaceInFile
+
+Control Q:              FindReplaceInFile
 
 # Go to the specified line in the current file
 Control G:              GoToLine
@@ -80,11 +100,10 @@ Control Shift Down:     MoveLineDown
 # Cut the current line
 Shift Delete:           CutLine
 
-# Delete the current line
-Control Shift L:        DeleteLine
+
 
 # Show the current file in the workspace tree
-Control T:              ShowInWorkspaceTree
+#Control T:              ShowInWorkspaceTree
 
 # Add a new cursor on the line above
 Shift Alt Up:           MultiCursorMoveUp
@@ -93,22 +112,22 @@ Shift Alt Up:           MultiCursorMoveUp
 Shift Alt Down:         MultiCursorMoveDown
 
 # Comment the current line or selected lines
-Control K, Control C:   Commentline
+# Control K, Control C:   Commentline
 
 # Uncomment the current line or selected lines
-Control K, Control U:   Uncommentline
+# Control K, Control U:   Uncommentline
 
 # Toggle line comment if no select. Toggle block comment if selection.
-Control Shift /:        ToggleComment
+Control /:        ToggleComment
 
 # Duplicate the current line
-Control Shift D:        DuplicateLine
+Control L:        DuplicateLine
 
 # Insert a new line at the current line
 Control Enter:          InsertLine
 
 # Select all text
-Control A:              SelectAll
+Control A:              Search
 
 # Select the current scope
 Shift Alt =:       SelectCurrentScope
@@ -120,10 +139,10 @@ Control Shift M:        SelectCurrentBracketScope
 Control Shift E:        ToggleWorkspaceExplorer
 
 # Move the current panel left
-Control Alt Left:       PrevPanelTab
+# Control Alt Left:       PrevPanelTab
 
 # Move the current panel right
-Control Alt Right:      NextPanelTab
+# Control Alt Right:      NextPanelTab
 
 # Move the current panel up
 Control Alt Up:         MovePanelUp
@@ -132,10 +151,10 @@ Control Alt Up:         MovePanelUp
 Control Alt Down:       MovePanelDown
 
 # Move the current panel focus left
-Alt Left:               MovePanelFocusLeft
+Control Alt Left:               MovePanelFocusLeft
 
 # Move the current panel focus right
-Alt Right:              MovePanelFocusRight
+Control Alt Right:              MovePanelFocusRight
 
 # Move the current panel focus up
 Alt Up:                 MovePanelFocusUp
@@ -153,10 +172,10 @@ Control Shift Tab:      ShowSwitchPanelPrevItem
 Shift Alt D:            DuplicatePanel
 
 # Duplicate the current panel and move to the left
-Alt Comma:              DuplicatePanelLeft
+# Alt Comma:              DuplicatePanelLeft
 
 # Duplicate the current panel and move to the right
-Alt .:             DuplicatePanelRight
+# Alt .:             DuplicatePanelRight
 
 # Toggle whitespace visibility
 Control Shift W:        ToggleWhitespace
@@ -171,16 +190,18 @@ Shift Alt S:            FindSymbol
 Shift Alt F:            FindSymbolReferences
 
 # Rename the current symbol
-Control R:              RenameSymbol
+# Control R:              RenameSymbol
 
 # Open the Find Function panel to find a function defnition in the current file
 Alt M:                  FindFunction
 
 # Show the autocomplete dropdown
-Control Space:          Autocomplete
+#Control Space:          Autocomplete
 
 # If cursor is in a function call show the function declaration
 Control Shift Space:    ShowFunctionArgsInfo
+
+F5:                     BuildActiveWorkspace
 
 # Build the currently active workspace
 F7:                     BuildActiveWorkspace
@@ -239,7 +260,7 @@ Shift F4:               GotoPrevResult
 Control Shift T:        RestoreRecentlyClosedFile
 
 # Format the selection or the current scope if no selection
-Control K, Control F:   FormatSelection
+# Control K, Control F:   FormatSelection
 
 # Show the FindInFiles panel
 Control Shift F:        FindInFiles
@@ -254,16 +275,22 @@ Alt R:                  ReplaceNextInFile
 Shift Alt R:            ReplaceAllInFile
 
 # Move the cursor to the previous word
-Control Left:           MoveCursorPrevWord
+# Control Left:           MoveCursorPrevWord
+# Control Left: MoveToWordStart
+Control Left: move_prev_word_boundary
 
 # Move the cursor to the next word
-Control Right:          MoveCursorNextWord
+# Control Right:          MoveCursorNextWord
+# Control Right: MoveToWordEnd
+Control Right: move_next_word_boundary
 
 # Select to the start of the current/prev word
-Control Shift Left:     MoveCursorPrevWordSelect
+# Control Shift Left:     MoveCursorPrevWordSelect
+Control Shift Left: move_prev_word_boundary_select
 
 # Select to the end of the current/next word
-Control Shift Right:    MoveCursorNextWordSelect
+# Control Shift Right:    MoveCursorNextWordSelect
+Control Shift Right: move_next_word_boundary_select
 
 # Example showing how to bind a python function to a key
 Alt H:                  HelloWorld()
@@ -286,20 +313,30 @@ MouseForwardButton:     NextLocation
 # Open Search Panel
 Control Shift S:        Search
 
-# Toggle between the source .cpp and .h header file
-Alt O:                  FindSymbol
+
 
 # luis added this
 Alt X:                  ShowCommandPanel
 
+Control I:              open_up_braces
+Alt I:                  open_up_braces
+
 # 
-Control O:              Search
+Control O:              FindFile
+Control Alt O:          toggle_header_source_file_other_view
+Alt O:                  CppParser.ToggleSourceHeader
+
+
+# Control T:              CppParser.ToggleSourceHeader
+# Alt T:                  toggle_header_source_file_other_view
+
 
 # 
 F12:                    ToggleWorkspaceExplorer
 
 # 
-Control J:              toggle_autocomplete
+#Control J:              toggle_autocomplete
+Control J:		   		Autocomplete
 
 # 
 Control Comma:          insert_underscore
@@ -335,13 +372,16 @@ Control PageUp:         GotoPrevResult
 Control PageDown:       GotoNextResult
 
 # 
-Control W:              CloseFile
+# Control W:              CloseFile
 
 # Show the execute command text box
 Control Shift X:        ShowCommandPanel
 
 # Delete the current character or selected text
 Delete:                 Delete
+
+Control Backspace:      delete_to_prev_word_boundary
+Control Delete:         delete_to_next_word_boundary
 
 # Collapse the current region
 Control Shift [:        CollapseRegion
@@ -353,7 +393,7 @@ Control Shift ]:        ExpandRegion
 Control M, Control M:   ToggleCollapseExpandRegion
 
 # Expand all the collapsed regions in the current file
-Control M, Control L:   ExpandAllRegions
+Control M, Control L:   ToggleCollapseExpandAllRegions
 
 # Show the context menu for the currently focused object
 AppsKey:                ShowContextMenu
@@ -362,7 +402,7 @@ AppsKey:                ShowContextMenu
 Control Shift F5:       RestartDebugging
 
 # Show the symbol info for the current symbol
-Control K, Control I:   ShowSymbolInfo
+# Control K, Control I:   ShowSymbolInfo
 
 # Move the cursor to the start of the line
 Home:                   MoveToLineStart
@@ -371,10 +411,10 @@ Home:                   MoveToLineStart
 End:                    MoveToLineEnd
 
 # Move the cursor to the end of the file
-Control Home:           MoveToFileStart
+Alt Shift Comma:           MoveToFileStart
 
 # Move the cursor to the end of the file
-Control End:            MoveToFileEnd
+Alt Shift .:            MoveToFileEnd
 
 # Select to the start of the line
 Shift Home:             SelectToLineStart
@@ -433,6 +473,15 @@ Shift PageDown:         SelectPageDown
 # Move to the matching bracket or brace
 Control Shift \:        MoveToMatchingBracket
 
+# Zoom in on editor text (increase font size)
+Control Shift .:        ZoomIn
+
+# Zoom in on editor text (decrease font size)
+Control Shift Comma:    ZoomOut
+
+# Go to the previous edit location
+Control Shift Backspace: PrevEditLocation
+
 
 # Move selection down by a page
 Alt Shift PageDown:     SelectPageDown
@@ -441,3 +490,20 @@ Alt Shift PageDown:     SelectPageDown
 # Move selection up by a page
 Alt Shift PageUp:       SelectPageUp
 
+
+
+## New stuff
+
+# TODO make this behave like emacs to preserve file in column
+Control 1:                     emacs_cx_1
+Control 3:                     emacs_cx_3
+Control 0:                     emacs_cx_0
+Control ;:                     focus_next_panel
+
+# Go to the previous cursor location
+Alt Left:        PrevLocation
+
+# Go to the next cursor location
+Alt Right:     NextLocation
+
+Control N:                  GotoSymbolDefinition

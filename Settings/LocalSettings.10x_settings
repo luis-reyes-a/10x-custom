@@ -12,14 +12,8 @@ PerforceUserName:
 PerforceClientName:                 
 
 # timeout in seconds for Perforce commands
-PerforceTimeout:                   20
+PerforceTimeout:                   40
 
 
 # Diff executable. Eg p4merge <file1> <file2>
 DiffExe:                           p4merge <file1> <file2>
-
-# License Key Name for registration
-LicenseKeyName:                    
-
-# License Key Value for registration
-LicenseKeyValue:                   

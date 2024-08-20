@@ -213,10 +213,10 @@ Control Alt F7:         RebuildActiveWorkspace
 Control F7:             BuildCurrentFile
 
 # Go to the previous build error
-Shift F8:               GotoPrevBuildError
+Shift F8:               GotoPrevBuildWarningOrError
 
 # Go to the next build error
-F8:                     GotoNextBuildError
+F8:                     GotoNextBuildWarningOrError
 
 # Cancel the current build
 Control Cancel:         CancelBuild
@@ -507,3 +507,58 @@ Alt Left:        PrevLocation
 Alt Right:     NextLocation
 
 Control N:                  GotoSymbolDefinition
+
+# Insert a new line after the current line
+Control Shift Enter:        InsertLineAfter
+
+# Move to the previous item in the autocomplete list
+Up:                         AutocompleteUp
+
+# Move to the next item in the autocomplete list
+Down:                       AutocompleteDown
+
+# Page selection up in the autocomplete list
+PageUp:                     AutocompletePageUp
+
+# Page selection down in the autocomplete list
+PageDown:                   AutocompletePageDown
+
+# Submit the current symbol rename
+Enter:                      SubmitRenameSymbol
+
+# Select all of the find results with multiple cursors
+Control Shift Alt J:        SelectAllOccurrences
+
+# Add a new cursor at the current mouse pos
+Control MouseMiddleButton:  AddCursorAtMousePos
+
+# Toggle fullscreen
+Alt Enter:                  ToggleFullscreen
+
+# Toggle focus mode
+Control Alt Enter:          ToggleFocusMode
+
+# Toggle fullscreen focus mode
+Shift Alt Enter:            ToggleFullScreenFocusMode
+
+# Debug step into
+F11:                        DebugStepInto
+
+# Debug step out
+Shift F11:                  DebugStepOut
+
+# Insert prev autocomplete
+Shift F14:                  InsertPrevAutocomplete
+
+# Insert next autocomplete
+F14:                        InsertNextAutocomplete
+
+
+# Move the cursor to the end of the line
+Alt Shift End:              SelectToLineEnd
+
+
+# Move the cursor to the start of the line
+Alt Shift Home:             MoveToLineStart
+
+

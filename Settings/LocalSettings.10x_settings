@@ -14,6 +14,12 @@ PerforceClientName:
 # timeout in seconds for Perforce commands
 PerforceTimeout:                   40
 
+# enable or disable p4 config txt files
+PerforceEnableP4Config:            true
+
+# True to enable perforce connections
+PerforceEnabled:                   true
+
 
 # Diff executable. Eg p4merge <file1> <file2>
 DiffExe:                           p4merge <file1> <file2>

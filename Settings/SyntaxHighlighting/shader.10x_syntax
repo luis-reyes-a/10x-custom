@@ -12,7 +12,7 @@
 #----------------------------------------------
 # settings
 
-Extensions:					.vert,.frag,.comp,.geom,.eval,.cont,.glsl,.hlsl,.hlsli,.fx,.rgen,.usf,.ush,.cg,.fx,.pssl,.cu,.fxh
+Extensions:					*.vert,*.frag,*.comp,*.geom,*.eval,*.cont,*.glsl,*.hlsl,*.hlsli,*.fx,*.rgen,*.usf,*.ush,*.cg,*.fx,*.pssl,*.cu,*.fxh
 
 BlockCommentStart:			/*
 

@@ -24,6 +24,29 @@ EditorFontSize:                           14
 # Extra spacing between lines
 VerticalLineGap:                          1
 
+# The main UI font size.
+# Usually it's best to keep this as default and let 10x decide the font size.
+# If you want to change the font size it's usually better to change the UIScale setting.
+UIFontSize:                               default
+
+# The font for all tool windows. Set to Default to use the EditorFont setting.
+# Can be the font name, the name of the ttf file in a system fonts
+# folder or the full path to a ttf file.
+# Only supports fixed width fonts.
+ToolFont:                                 default
+
+# The font size for all tool windows. Set to default to use the EditorFontSize setting
+ToolFontSize:                             default
+
+# The font for the output panels. Set to Default to use the ToolFont setting.
+# Can be the font name, the name of the ttf file in a system fonts
+# folder or the full path to a ttf file.
+# Only supports fixed width fonts.
+OutputPanelFont:                          default
+
+# The font size for the output panels. Set to default to use the ToolFontSize setting
+OutputPanelFontSize:                      default
+
 
 # Hide the main menu when not in use. Mouse Over to make visible.
 HideMainMenu:                             true
@@ -61,7 +84,7 @@ MouseWheelScrollStep:                     3
 ControlClickGotoDefinition:               true
 
 # Setting to true sleeps the app when idle instead of calling Present. The app is considered idle when nothing on screen changes and there is no user input. Calling nothing but present still uses a small <1% of CPU time, setting this will get it to 0%. However, this can cause issues with G-Sync. A better solution to the G-Sync problem is to turn off G-Sync for 10x in the NVIDIA display settings.
-DisablePresentWhenIdle:                   true
+DisablePresentWhenIdle:                   false
 
 # File wildcards for files that should automatically open in column 0. Separated by commas.
 Column0Presets:                           *.c,*.cc,*.cpp,*.c++,*.cp,*.cxx
@@ -217,6 +240,13 @@ Search.MaxResults:                        1000
 # Sort the file results by how often they have been opened
 Search.SortOpenFilesByOpenFrequency:      true
 
+# If true, go to a workspace search result will automatically set the find text
+Search.SetFindText:                       true
+
+# Files in these directories will be added to the workspace search set
+Search.GlobalDirectories:                 
+
+
 # Update the current block indentation when a close brace is typed
 UpdateIndentsOnCloseBrace:                true
 
@@ -299,6 +329,24 @@ AutoNameUntitledFiles:                    false
 # Open the previously opened files on startup when no workspace is open
 RememberOpenFiles:                        false
 
+# Regular expression used to detect warning lines in the output panel
+OutputPanelWarningRegex:                  \[warning\]
+
+# Regular expression used to detect error lines in the output panel
+OutputPanelErrorRegex:                    \[error\]
+
+# Save all files when 10x loses focus
+SaveAllOnLoseFocus:                       false
+
+# Update to the early access builds. Builds are released on early access before general release.
+EarlyAccessUpdates:                       false
+
+# SaveAs dialog will use the path of the previously focused file
+SaveAsUsesPrevPanelPath:                  true
+
+# Path of the Visual Studio install. Used to find the VisualStudioEnvBat path and to start the VS debugger. eg C:\Program Files (x86)\Microsoft Visual Studio\2019\Community. Set to `default` to automatically find the path to the latest installed VS. Requires restart of 10x.
+VisualStudioInstallPath:                  default
+
 
 # How to display the cursor (caret) in the text editor. Values: (Line, Block, Underscore)
 # Valid values: Line, Block, Underscore, HalfBlock
@@ -332,7 +380,7 @@ AutocompleteInComments:                   false
 MaxOpenTabs:                              20
 
 # The default WordWrap setting when opening files
-WordWrap:                                 false
+WordWrap:                                 true
 
 # Show the collapse expand margin (true, false)
 ShowCollapseRegionMargin:                 true
@@ -352,6 +400,21 @@ AlignToEquals:                            false
 # Enable dragging of text with the mouse
 TextDrag:                                 true
 
+# True to make the End key update the rectangle select instead of going to the end of each multi-cursor line
+EndKeyUpdatesRectSelect:                  true
+
+# Enable colouring of braces and brackets based on depth
+ColorBracesByDepth:                       false
+
+# Allow editing of read only files
+AllowEditingOfReadOnlyFiles:              true
+
+# Always use spaces after current tab depth when aligning
+ExtendEmptyLinesUsingSpaces:              false
+
+# If InsertMode is set to spaces backspace will delete TabWidth spaces
+BackspaceDeletesTabs:                     false
+
 
 # Highlight the current find text in the scroll bar
 HighlightFindTextInScrollBar:             true
@@ -368,9 +431,34 @@ GotoDefResolvesTypedefs:                  false
 # Files larger than this size (in bytes) will not be parsed.
 ParserMaxFileSize:                        52428800
 
+# true to enable the function info hover box (shows function args when typing a function call)
+EnableFunctionInfoHoverBox:               true
+
+# The number of items to show in the autocomplete dropdown
+AutocompleteCount:                        6
+
+# Allow preprocessor lines to be indented
+AllowPreprocessorLineIndenting:           true
+
+# Use fuzzy matching in the FindSymbol panel
+FindSymbolFuzzyMatching:                  true
+
+# List of comma separated defines for the parser
+GlobalDefines:                            
+
 
 # Stop the debugger when a full build starts
 StopDebuggingOnBuild:                     false
+
+# Regular expression used to identify warnings in the build output
+BuildWarningRegex:                        
+
+# Regular expression used to identify errors in the build output
+BuildErrorRegex:                          
+
+# Close the build output panel after a successful build
+CloseBuildOutputAfterBuild:               false
+
 
 # If the file hasn't been opened before open it in the currently active panel
 OpenFileInActivePanel:                    false
@@ -393,11 +481,48 @@ UseColumnPresets:                         true
 # True to put the cursor at the start of the selected find text instead of the end
 ReverseFindSelection:                     false
 
+# How to name the window from the workspace (Name, Path)
+WindowTitle:                              Name
+
+# Resize the line numbers column to show line numbers this many chars wide
+MinLineNumberWidth:                       3
+
+# Show line numbers relative to the current line
+RelativeLineNumbers:                      false
+
+
 # 
 # Perforce
 # 
 
 # Automatically open a file for edit when read only files are modified or saved
 PerforceAutoOpenForEdit:                  true
+
+
+# 
+# Debug
+# 
+
+# Sync the current debug line when it changes in the external debugger
+SyncDebugLine:                            true
+
+
+# 
+# Accessibility
+# 
+
+# Enable accessibility text to speech
+TextToSpeech:                             false
+
+
+# 
+# Formatting
+# 
+
+# True to add a space after an open bracket and before a close bracket
+SpaceBrackets:                            false
+
+# When aligning to a function call open bracket with tab indent mode use tabs up to the current indent level and then use spaces
+UseSpacesAfterCurrentIndent:              false
 
 

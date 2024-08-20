@@ -347,3 +347,35 @@ UI.ScrollBarFindMatchHighlight:     default
 # Colour of the current word match results in the scroll bar
 UI.ScrollBarWordMatchHighlight:     default
 
+# Brace/bracket colour at depth 1
+Editor.BraceDepth1:                 default
+
+
+# Brace/bracket colour at depth 2
+Editor.BraceDepth2:                 default
+
+
+# Brace/bracket colour at depth 3
+Editor.BraceDepth3:                 default
+
+
+# Brace/bracket colour at depth 4
+Editor.BraceDepth4:                 default
+
+
+# Brace/bracket colour at depth 5
+Editor.BraceDepth5:                 default
+
+
+# Brace/bracket colour at depth 6
+Editor.BraceDepth6:                 default
+
+
+# Debugger step line
+Editor.DebuggerStepLine:            default
+
+
+# Status bar line colour while debugging
+Editor.DebuggingStatusBarColour:    default
+
+
